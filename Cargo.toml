@@ -1,0 +1,11 @@
+[package]
+name = "lock-free-ll"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+claim = "0.5.0"
+shuttle = "0.7.1"
+rand = "0.8.5"
