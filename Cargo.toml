@@ -7,5 +7,4 @@ edition = "2021"
 
 [dev-dependencies]
 claim = "0.5.0"
-shuttle = "0.7.1"
 rand = "0.8.5"
