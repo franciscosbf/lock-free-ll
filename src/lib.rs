@@ -249,7 +249,6 @@ impl<K, V> Drop for InnerLinkedList<K, V> {
             curr = next;
 
             if curr == self.tail {
-                // tail points to head.
                 break;
             }
         }
@@ -541,13 +540,19 @@ mod tests {
         }
 
         let mut merged_removals = HashSet::new();
-        for i in removals {
+        for i in &removals {
             assert!(
-                merged_removals.insert(i),
+                merged_removals.insert(*i),
                 "{} was removed more than one time",
                 i
             );
         }
+
+        assert_eq!(merged_removals.len(), removals.len());
+
+        let remained = 5000 - removals.len();
+
+        assert_eq!(ll.len(), remained);
 
         for i in 0..5000 {
             if !merged_removals.contains(&i) {
