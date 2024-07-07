@@ -503,14 +503,14 @@ mod tests {
 
         let l = ll.clone();
         let t1 = std::thread::spawn(move || {
-            for i in 0..2500 {
+            for i in 0..5000 {
                 assert!(l.insert(i, i));
             }
         });
 
         let l = ll.clone();
         let t2 = std::thread::spawn(move || {
-            for i in 2500..5000 {
+            for i in 5000..10000 {
                 assert!(l.insert(i, i));
             }
         });
@@ -531,9 +531,30 @@ mod tests {
             removals
         });
 
+        let l = ll.clone();
+        let t4 = std::thread::spawn(move || {
+            let mut removals = vec![];
+            let mut rng = thread_rng();
+
+            for _ in 5000..10000 {
+                let i = rng.gen_range(5000..10000);
+
+                if l.remove(&i) {
+                    removals.push(i);
+                }
+            }
+
+            removals
+        });
+
         assert_ok!(t1.join());
         assert_ok!(t2.join());
-        let removals = assert_ok!(t3.join());
+
+        let mut removals_t3 = assert_ok!(t3.join());
+        let mut removals_t4 = assert_ok!(t4.join());
+
+        removals_t3.append(&mut removals_t4);
+        let removals = removals_t3;
 
         for i in &removals {
             assert_none!(ll.get(i));
@@ -550,11 +571,11 @@ mod tests {
 
         assert_eq!(merged_removals.len(), removals.len());
 
-        let remained = 5000 - removals.len();
+        let remained = 10000 - removals.len();
 
         assert_eq!(ll.len(), remained);
 
-        for i in 0..5000 {
+        for i in 0..10000 {
             if !merged_removals.contains(&i) {
                 let ref_guard = assert_some!(ll.get(&i));
                 assert_eq!(*ref_guard.value, i);
